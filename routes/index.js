@@ -2,10 +2,12 @@
 // import { MercadoPagoConfig, Payment } from 'mercadopago';
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 
+const ACCESS_TOKEN = 'TEST-7845463688011799-061009-9db19d3982f42b151177f1a9e32f6002-141342279'
+
 // Step 2: Initialize the client object
 const client = new MercadoPagoConfig(
   { 
-    accessToken: 'APP_USR-7845463688011799-061009-496adb23f016093f2c055a949d49ac4f-141342279',
+    accessToken: ACCESS_TOKEN ,
     options: { timeout: 5000, idempotencyKey: 'abc' }
   }
 );
@@ -19,7 +21,12 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express v0.0.1' });
+  res.render('index', { title: 'Express v0.0.2' });
+});
+
+/* GET home page. */
+router.get('/alo', function(req, res, next) {
+  res.send('Alo v0.0.1');
 });
 
 const MOCK_RESULT = {
@@ -174,6 +181,59 @@ router.post('/criar-pix', function(req, res, next) {
 
 
   // res.send(MOCK_RESULT);
+});
+
+router.post('/process_payment', function(req, res, next) {
+  console.log("REQUEST")
+  console.log(req.body.body)
+  console.log(req.body.body.payment_method_id)
+  console.log("REQUEST-V3")
+
+  const body = req.body.body;
+
+  const body_api = { 
+    transaction_amount: 3.47,
+    token: body.token,
+    description: body.description,
+    installments: body.installments,
+    payment_method_id: body.payment_method_id,
+    issuer_id: body.issuer_id,
+        payer: {
+        email: body.payer.email,
+        identification: {
+    type: body.payer.identification.type,
+    number: body.payer.identification.number
+  }}}
+
+
+  payment.create({
+    body: { 
+      transaction_amount: body.transaction_amount,
+      token: body.token,
+      description: body.description,
+      installments:  body.installments,
+      payment_method_id: body.payment_method_id,
+      issuer_id: body.issuer_id,
+          payer: {
+          email: body.payer.email,
+          identification: {
+      type: body.payer.identification.type,
+      number: body.payer.identification.number
+  }}},
+    requestOptions: { idempotencyKey: '<SOME_UNIQUE_VALUE>' }
+  })
+  .then((result) => {
+  
+    console.log("THEN")
+    console.log(result)
+  })
+  .catch((error) => {
+    console.log("CATCH")
+    console.log(error)
+  });
+
+  res.send("DEU BOM");
+
 });
 
 module.exports = router;
