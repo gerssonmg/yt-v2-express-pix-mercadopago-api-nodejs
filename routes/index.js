@@ -2,7 +2,12 @@
 // import { MercadoPagoConfig, Payment } from 'mercadopago';
 const { MercadoPagoConfig, Payment } = require('mercadopago');
 
-const ACCESS_TOKEN = 'TEST-7845463688011799-061009-9db19d3982f42b151177f1a9e32f6002-141342279'
+require('dotenv').config();
+
+const { v4: uuidv4 } = require('uuid');
+
+// YT 22JUNHO2024Webhook
+const ACCESS_TOKEN = process.env.ACCESS_TOKEN
 
 // Step 2: Initialize the client object
 const client = new MercadoPagoConfig(
@@ -159,13 +164,19 @@ router.post('/criar-pix', function(req, res, next) {
     transaction_amount: req.body.body.transaction_amount,
     description: req.body.body.description,
     payment_method_id: req.body.body.paymentMethodId,
-        payer: {
+    payer: {
         email: req.body.body.email,
         identification: {
-    type: req.body.body.identificationType,
-    number: req.body.body.number
-  }}}
-  const requestOptions = { idempotencyKey: '<SOME_UNIQUE_VALUE>' }
+          type: req.body.body.identificationType,
+          number: req.body.body.number
+        }
+    },
+    notification_url: "https://krill-civil-thoroughly.ngrok-free.app/v0/webhook"
+  }
+
+  const requestOptions = { idempotencyKey: uuidv4() };
+
+  // const requestOptions = { idempotencyKey: '<SOME_UNIQUE_VALUE>' }
 
   payment.create({ body, requestOptions })
     .then((result) => {
