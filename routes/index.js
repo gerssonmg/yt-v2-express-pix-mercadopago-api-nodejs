@@ -9,6 +9,8 @@ const { v4: uuidv4 } = require('uuid');
 // YT 22JUNHO2024Webhook
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN
 
+const NGROK_URL = process.env.NGROK_URL
+
 // Step 2: Initialize the client object
 const client = new MercadoPagoConfig(
   { 
@@ -171,7 +173,7 @@ router.post('/criar-pix', function(req, res, next) {
           number: req.body.body.number
         }
     },
-    notification_url: "https://krill-civil-thoroughly.ngrok-free.app/v0/webhook"
+    notification_url: `${NGROK_URL}/v1/webhook`
   }
 
   const requestOptions = { idempotencyKey: uuidv4() };
